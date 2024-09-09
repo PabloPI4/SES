@@ -3,7 +3,7 @@
 #include <stdio.h>
 
 unsigned char *encryptSegment(unsigned char *, int, int, int);
-unsigned char *encrypt(char *, int, unsigned char *, int);
+unsigned char *encrypt(char *, int, unsigned char *);
 unsigned int strlen2(unsigned char *);
 void strcpy2(unsigned char *, unsigned char *);
 void strcpy3(unsigned char *, char *);
@@ -13,7 +13,7 @@ int main() {
     unsigned char *textoSin = (unsigned char *) malloc(34);
     strcpy3(textoSin, "Me gustan los platanos amarillos");
     textoSin[33] = '\0';
-    unsigned char *texto = encrypt("joder", 6, textoSin, strlen2(textoSin));
+    unsigned char *texto = encrypt("cascos", 6, textoSin);
     for (long unsigned int i = 0; i < strlen2(texto); i++) {
         fprintf(stderr, "%d\n", (int) texto[i]);
         nescritos++;
@@ -24,7 +24,8 @@ int main() {
     return 0;
 }
 
-unsigned char *encrypt(char *key, int keylength, unsigned char *text, int textlength) {
+unsigned char *encrypt(char *key, int keylength, unsigned char *text) {
+    int textlength = strlen2(text);
     int encryptedTextlength = 0;
     int meanKey = 0;
 
@@ -34,7 +35,6 @@ unsigned char *encrypt(char *key, int keylength, unsigned char *text, int textle
     meanKey /= keylength;
 
     int reps = (textlength % keylength > 0) ? (textlength / keylength) + 1: (textlength / keylength);
-    fprintf(stderr, "tam: %ld\n", reps * sizeof (unsigned char *));
     unsigned char **encryptedSegmentedText = (unsigned char **) malloc(sizeof(unsigned char *) * reps);
 
     for (int i = 0; i < reps; i++) {
