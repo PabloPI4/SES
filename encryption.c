@@ -1,28 +1,6 @@
 #include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
-
-unsigned char *encryptSegment(unsigned char *, int, int, int);
-unsigned char *encrypt(char *, int, unsigned char *);
-unsigned int strlen2(unsigned char *);
-void strcpy2(unsigned char *, unsigned char *);
-void strcpy3(unsigned char *, char *);
-
-int main() {
-    int nescritos = 0;
-    unsigned char *textoSin = (unsigned char *) malloc(34);
-    strcpy3(textoSin, "Me gustan los platanos amarillos");
-    textoSin[33] = '\0';
-    unsigned char *texto = encrypt("cascos", 6, textoSin);
-    for (long unsigned int i = 0; i < strlen2(texto); i++) {
-        fprintf(stderr, "%d\n", (int) texto[i]);
-        nescritos++;
-    }
-    fprintf(stderr, "nescritos: %d\n", nescritos);
-    fprintf(stderr, "%s\n", texto);
-
-    return 0;
-}
+#include "encryption.h"
+#include "funcAux.h"
 
 unsigned char *encrypt(char *key, int keylength, unsigned char *text) {
     int textlength = strlen2(text);
@@ -73,13 +51,13 @@ unsigned char *encryptSegment(unsigned char *segment, int keyChar, int meanKey, 
     int nspaces = (keyChar - meanKey > 0) ? (keyChar - meanKey)%4 : (meanKey - keyChar)%4;
     int nrotationsSegment = (keyChar / keylength);
     /*Se calcula el numero de rotaciones logicas que se le aplicara a cada caracter*/
-    int rotations = ((keyChar - meanKey) > 0) ? (keyChar - meanKey)%7 + 1 : (meanKey - keyChar)%7+ 1;
+    int rotationsLogic = ((keyChar - meanKey) > 0) ? (keyChar - meanKey)%7 + 1 : (meanKey - keyChar)%7+ 1;
 
     unsigned char *encryptedText = (unsigned char *) malloc(keylength * (1+nspaces) + 1);
 
     for (int i = 0; i < keylength; i++) {
         int newChar = (int) segment[i];
-        encryptedText[i * (nspaces + 1)] = ((int) segment[i] >> rotations) | (newChar << (8 - rotations));
+        encryptedText[i * (nspaces + 1)] = ((int) segment[i] >> rotationsLogic) | (newChar << (8 - rotationsLogic));
     }
 
     unsigned char space;
@@ -104,34 +82,4 @@ unsigned char *encryptSegment(unsigned char *segment, int keyChar, int meanKey, 
     encryptedText[keylength * (1+nspaces)] = '\0';
 
     return encryptedText;
-}
-
-
-
-unsigned int strlen2(unsigned char *text) {
-    unsigned int num = 0;
-
-    while (text[num] != '\0') {
-        num++;
-    }
-
-    return num;
-}
-
-void strcpy2(unsigned char *dest, unsigned char *src) {
-    int num = 0;
-
-    while (src[num] != '\0') {
-        dest[num] = src[num];
-        num++;
-    }
-}
-
-void strcpy3(unsigned char *dest, char *src) {
-    int num = 0;
-
-    while (src[num] != '\0') {
-        dest[num] = src[num];
-        num++;
-    }
 }
