@@ -1,11 +1,10 @@
+#include <stdio.h>
+
 unsigned int strlen2(unsigned char *text) {
-    unsigned int num = 0;
+    register unsigned char *s;
 
-    while (text[num] != '\0') {
-        num++;
-    }
-
-    return num;
+    for (s = text; *s; ++s);
+	return(s - text);
 }
 
 void strcpy2(unsigned char *dest, unsigned char *src) {
@@ -14,6 +13,16 @@ void strcpy2(unsigned char *dest, unsigned char *src) {
     while (src[num] != '\0') {
         dest[num] = src[num];
         num++;
+    }
+}
+
+void strncpy2(unsigned char *dest, unsigned char *src, int n) {
+    int count = 0;
+
+    while (src[count] != '\0' && count != n) {
+        fprintf(stderr, "char es: %d\n", src[count]);
+        dest[count] = src[count];
+        count++;
     }
 }
 

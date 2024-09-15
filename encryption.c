@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include "encryption.h"
 #include "funcAux.h"
+#include <stdio.h>
 
 unsigned char *encrypt(char *key, int keylength, unsigned char *text) {
     int textlength = strlen2(text);
@@ -27,7 +28,7 @@ unsigned char *encrypt(char *key, int keylength, unsigned char *text) {
 
     unsigned char *encryptedText = (unsigned char *) malloc(encryptedTextlength + 1);
     encryptedTextlength = 0;
-    int numOrder = reps - meanKey%reps;
+    int numOrder = meanKey%keylength;
 
     for (int i = 0; i < reps; i++) {
         unsigned char *segment = encryptedSegmentedText[(i+numOrder)%reps];
@@ -49,17 +50,20 @@ unsigned char *encryptSegment(unsigned char *segment, int keyChar, int meanKey, 
 
     /*Se calcula el numero de espacios entre caracteres y de rotaciones en el segmento que van a haber*/
     int nspaces = (keyChar - meanKey > 0) ? (keyChar - meanKey)%4 : (meanKey - keyChar)%4;
+    fprintf(stderr, "nspaces: %d\n", nspaces);
     int nrotationsSegment = (keyChar / keylength);
     /*Se calcula el numero de rotaciones logicas que se le aplicara a cada caracter*/
     int rotationsLogic = ((keyChar - meanKey) > 0) ? (keyChar - meanKey)%7 + 1 : (meanKey - keyChar)%7+ 1;
 
     unsigned char *encryptedText = (unsigned char *) malloc(keylength * (1+nspaces) + 1);
 
+    //rotaciones logicas
     for (int i = 0; i < keylength; i++) {
         int newChar = (int) segment[i];
         encryptedText[i * (nspaces + 1)] = ((int) segment[i] >> rotationsLogic) | (newChar << (8 - rotationsLogic));
     }
 
+    //espacios
     unsigned char space;
     for (int i = 0; i < keylength; i++) {
         for (int j = 1; j < nspaces + 1; j++) {
@@ -72,6 +76,7 @@ unsigned char *encryptSegment(unsigned char *segment, int keyChar, int meanKey, 
     char rotcharLast = encryptedText[0];
     char rotcharNext;
 
+    //rotaciones del segmento
     do {
         numrot = (numrot + nrotationsSegment) % (keylength * (1+nspaces));
         rotcharNext = encryptedText[numrot];
